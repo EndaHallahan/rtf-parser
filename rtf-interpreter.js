@@ -194,6 +194,9 @@ class RTFInterpreter extends Writable {
   ctrl$strike (set) {
     this.group.style.strikethrough = set !== 0
   }
+  ctrl$scaps (set) {
+    this.group.style.smallcaps = set !== 0
+  }
   ctrl$ul (set) {
     this.group.style.underline = set !== 0
   }
