@@ -97,6 +97,8 @@ class RTFInterpreter extends Writable {
       doc.fonts = endingGroup.table
     } else if (endingGroup instanceof ColorTable) {
       doc.colors = endingGroup.table
+    } else if (endingGroup instanceof ListTable) {
+      doc.lists = endingGroup.table
     } else if (endingGroup !== this.doc && !endingGroup.get('ignorable')) {
       for (const item of endingGroup.content) {
         doc.addContent(item)
@@ -342,6 +344,141 @@ class RTFInterpreter extends Writable {
     this.group.style.fontSize = value
   }
 
+  //lists
+  ctrl$listtable () {
+    this.group = new ListTable(this.group.parent)
+  }
+  ctrl$list () {
+    this.group = new List(this.group.parent)
+    this.group.parent.table.push(this.group.list)
+  }
+  ctrl$listlevel () {
+    this.group = new ListLevel(this.group.parent)
+    this.group.parent.list.levels.push(this.group.listlevel)
+  }
+
+  ctrl$listid (num) {
+    if (this.group instanceof List) {
+      this.group.list.id = num
+    }   
+  }
+  ctrl$listtemplateid (num) {
+    if (this.group instanceof List) {
+      this.group.list.templateid = num
+    }  
+  }
+  ctrl$listsimple (num) {
+    if (this.group instanceof List) {
+      this.group.list.simple = num
+    }
+  }
+  ctrl$listhybrid () {
+    if (this.group instanceof List) {
+      this.group.list.hybrid = true
+    }
+  }
+  ctrl$listname (text) {
+    if (this.group instanceof List) {
+      this.group.list.name = text
+    }
+  }
+  ctrl$liststyleid (num) {
+    if (this.group instanceof List) {
+      this.group.list.styleid = num
+    }
+  }
+  ctrl$liststylename (txt) {
+    if (this.group instanceof List) {
+      this.group.list.stylename = text
+    }
+  }
+  ctrl$liststartat (num) {
+    if (this.group instanceof List) {
+      this.group.list.startat = num
+    }
+  }
+  ctrl$lvltentative () {
+    if (this.group instanceof List) {
+      this.group.list.tentative = true
+    }
+  }
+
+  ctrl$levelstartat (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.startat = num
+    }
+  }
+  ctrl$levelnfc (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.nfc = num
+    }  
+  }
+  ctrl$levelnfcn (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.nfcn = num
+    }
+  }
+  ctrl$leveljc (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.jc = num
+    }
+  }
+  ctrl$leveljcn (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.jcn = num
+    }
+  }
+  ctrl$leveltext (txt) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.text = txt
+    }
+  }
+  ctrl$levelnumbers (txt) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.numbers = txt
+    }
+  }
+  ctrl$levelfollow (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.follow = num
+    }
+  }
+  ctrl$levellegal (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.legal = num
+    }
+  }
+  ctrl$levelnorestart (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.norestart = num
+    }
+  }
+  ctrl$levelold (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.old = num
+    }
+  }
+  ctrl$levelprev (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.prev = num
+    }
+  }
+  ctrl$levelprevspace (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.prevspace = num
+    }
+  }
+  ctrl$levelindent (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.indent = num
+    }
+  }
+  ctrl$levelspace (num) {
+    if (this.group instanceof ListLevel) {
+      this.group.listlevel.space = num
+    }
+  }
+
 // margins
   ctrl$margl (value) {
     this.doc.marginLeft = value
@@ -406,6 +543,29 @@ class ColorTable extends RTFGroup {
     this.red = 0
     this.blue = 0
     this.green = 0
+  }
+}
+
+class ListTable extends RTFGroup {
+  constructor (parent) {
+    super(parent)
+    this.table = []
+  }
+}
+class List extends RTFGroup {
+  constructor (parent) {
+    super(parent)
+    this.list = {
+      levels: []
+    }
+  }
+}
+class ListLevel extends RTFGroup {
+  constructor (parent) {
+    super(parent)
+    this.listlevel = {
+      style: this.style
+    }
   }
 }
 
