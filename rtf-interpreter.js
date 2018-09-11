@@ -198,6 +198,9 @@ class RTFInterpreter extends Writable {
   ctrl$strike (set) {
     this.group.style.strikethrough = set !== 0
   }
+  ctrl$scaps (set) {
+    this.group.style.smallcaps = set !== 0
+  }
   ctrl$ul (set) {
     this.group.style.underline = set !== 0
   }
@@ -478,6 +481,13 @@ class RTFInterpreter extends Writable {
     }
   }
 
+  ctrl$ilvl (num) {
+    this.group.style.ilvl = num
+  }
+  /*ctrl$listtext () { 
+    this.group.style.listtext = true
+  }*/
+
   //list overrides
   ctrl$listoverridetable () {
     this.group = new ListOverrideTable(this.group.parent)
@@ -496,6 +506,8 @@ class RTFInterpreter extends Writable {
   ctrl$ls (num) {
     if (this.group instanceof ListOverride) {
       this.group.list.ls = num
+    } else {
+      this.group.style.ls = num
     }
   }
   ctrl$listoverridestartat () {
