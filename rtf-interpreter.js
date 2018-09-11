@@ -99,6 +99,8 @@ class RTFInterpreter extends Writable {
       doc.colors = endingGroup.table
     } else if (endingGroup instanceof ListTable) {
       doc.lists = endingGroup.table
+    } else if (endingGroup instanceof ListOverrideTable) {
+      doc.overrideLists = endingGroup.table
     } else if (endingGroup !== this.doc && !endingGroup.get('ignorable')) {
       for (const item of endingGroup.content) {
         doc.addContent(item)
@@ -195,9 +197,6 @@ class RTFInterpreter extends Writable {
   }
   ctrl$strike (set) {
     this.group.style.strikethrough = set !== 0
-  }
-  ctrl$scaps (set) {
-    this.group.style.smallcaps = set !== 0
   }
   ctrl$ul (set) {
     this.group.style.underline = set !== 0
@@ -358,9 +357,9 @@ class RTFInterpreter extends Writable {
   }
 
   ctrl$listid (num) {
-    if (this.group instanceof List) {
+    if (this.group instanceof List || ListOverride) {
       this.group.list.id = num
-    }   
+    }
   }
   ctrl$listtemplateid (num) {
     if (this.group instanceof List) {
@@ -479,6 +478,37 @@ class RTFInterpreter extends Writable {
     }
   }
 
+  //list overrides
+  ctrl$listoverridetable () {
+    this.group = new ListOverrideTable(this.group.parent)
+  }
+  ctrl$listoverride () {
+    this.group = new ListOverride(this.group.parent)
+    this.group.parent.table.push(this.group.list)
+  }
+
+  //list overrides
+  ctrl$listoverridecount (num) {
+    if (this.group instanceof ListOverride) {
+      this.group.list.overridecount = num
+    }
+  }
+  ctrl$ls (num) {
+    if (this.group instanceof ListOverride) {
+      this.group.list.ls = num
+    }
+  }
+  ctrl$listoverridestartat () {
+    if (this.group instanceof ListOverride) {
+      this.group.list.overridestartat = true
+    }
+  }
+  ctrl$listoverrideformat (num) {
+    if (this.group instanceof ListOverride) {
+      this.group.list.overrideformat = num
+    }
+  }
+
 // margins
   ctrl$margl (value) {
     this.doc.marginLeft = value
@@ -566,6 +596,19 @@ class ListLevel extends RTFGroup {
     this.listlevel = {
       style: this.style
     }
+  }
+}
+
+class ListOverrideTable extends RTFGroup {
+  constructor (parent) {
+    super(parent)
+    this.table = []
+  }
+}
+class ListOverride extends RTFGroup {
+  constructor (parent) {
+    super(parent)
+    this.list = {}
   }
 }
 
