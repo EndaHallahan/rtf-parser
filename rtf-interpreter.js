@@ -484,9 +484,6 @@ class RTFInterpreter extends Writable {
   ctrl$ilvl (num) {
     this.group.style.ilvl = num
   }
-  /*ctrl$listtext () { 
-    this.group.style.listtext = true
-  }*/
 
   //list overrides
   ctrl$listoverridetable () {
